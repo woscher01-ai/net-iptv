@@ -1,5 +1,5 @@
 import React from 'react';
-import { Search, Plus, Shield, ShieldOff, Globe, Layers, Heart } from 'lucide-react';
+import { Search, Plus, Shield, ShieldOff, Globe, Layers } from 'lucide-react';
 
 export default function Header({
   searchTerm,
@@ -31,7 +31,7 @@ export default function Header({
           >
             Home
           </button>
-          
+
           <button
             className={`nav-item ${activeFilter === 'favorites' ? 'active' : ''}`}
             onClick={() => setActiveFilter('favorites')}
@@ -40,7 +40,7 @@ export default function Header({
           </button>
 
           {/* Group View vs Country View Toggle */}
-          <div style={{ display: 'flex', alignItems: 'center', background: '#252525', borderRadius: '20px', padding: '2px', marginLeft: '12px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', background: '#252525', borderRadius: '20px', padding: '2px', marginLeft: '8px' }}>
             <button
               className={`tab-btn ${viewMode === 'group' ? 'active' : ''}`}
               style={{ fontSize: '12px', padding: '4px 10px', borderRadius: '16px' }}
@@ -85,7 +85,7 @@ export default function Header({
           <input
             type="text"
             className="search-input"
-            placeholder="Search channel or country..."
+            placeholder="Search channels, country..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />

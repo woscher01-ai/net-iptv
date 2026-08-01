@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-import { X, Link, Upload, FileText, Check, AlertCircle, Play } from 'lucide-react';
+import { X, Link, Upload, FileText, AlertCircle, Play, Globe } from 'lucide-react';
 import { parseM3U } from '../utils/m3uParser';
 import { DEMO_CHANNELS, DEMO_PLAYLIST_NAME } from '../data/demoChannels';
+
+export const IPTV_ORG_URL = "https://iptv-org.github.io/iptv/index.m3u";
 
 export default function PlaylistModal({ onClose, onLoadPlaylist, useCorsProxy }) {
   const [activeTab, setActiveTab] = useState('url');
@@ -11,16 +13,15 @@ export default function PlaylistModal({ onClose, onLoadPlaylist, useCorsProxy })
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const handleUrlSubmit = async (e) => {
-    e.preventDefault();
-    if (!urlInput.trim()) return;
-
+  const fetchAndParseM3U = async (url, name) => {
     setLoading(true);
     setError('');
 
     try {
-      let fetchUrl = urlInput.trim();
-      if (useCorsProxy) {
+      let fetchUrl = url.trim();
+      
+      // Use CORS proxy if requested or for external github pages raw links
+      if (useCorsProxy || fetchUrl.includes('iptv-org.github.io')) {
         fetchUrl = `https://corsproxy.io/?${encodeURIComponent(fetchUrl)}`;
       }
 
@@ -36,7 +37,7 @@ export default function PlaylistModal({ onClose, onLoadPlaylist, useCorsProxy })
       }
 
       onLoadPlaylist({
-        name: playlistName.trim() || 'Custom M3U Playlist',
+        name: name || 'Custom M3U Playlist',
         channels: parsedChannels
       });
       onClose();
@@ -46,6 +47,12 @@ export default function PlaylistModal({ onClose, onLoadPlaylist, useCorsProxy })
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleUrlSubmit = (e) => {
+    e.preventDefault();
+    if (!urlInput.trim()) return;
+    fetchAndParseM3U(urlInput, playlistName.trim() || 'Custom M3U Playlist');
   };
 
   const handleFileUpload = (e) => {
@@ -115,6 +122,10 @@ export default function PlaylistModal({ onClose, onLoadPlaylist, useCorsProxy })
     onClose();
   };
 
+  const handleLoadIPTVOrg = () => {
+    fetchAndParseM3U(IPTV_ORG_URL, "IPTV-Org Global Collection");
+  };
+
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
@@ -165,7 +176,7 @@ export default function PlaylistModal({ onClose, onLoadPlaylist, useCorsProxy })
             <input
               type="text"
               className="form-input"
-              placeholder="e.g. My Favorite Sports Pack"
+              placeholder="e.g. My Global IPTV Pack"
               value={playlistName}
               onChange={(e) => setPlaylistName(e.target.value)}
             />
@@ -179,7 +190,7 @@ export default function PlaylistModal({ onClose, onLoadPlaylist, useCorsProxy })
                 <input
                   type="url"
                   className="form-input"
-                  placeholder="https://example.com/playlist.m3u"
+                  placeholder="https://iptv-org.github.io/iptv/index.m3u"
                   value={urlInput}
                   onChange={(e) => setUrlInput(e.target.value)}
                   required
@@ -192,7 +203,7 @@ export default function PlaylistModal({ onClose, onLoadPlaylist, useCorsProxy })
                 style={{ width: '100%', marginTop: '12px' }}
                 disabled={loading}
               >
-                {loading ? 'Fetching & Parsing...' : 'Load M3U URL'}
+                {loading ? 'Fetching & Parsing M3U...' : 'Load M3U URL'}
               </button>
             </form>
           )}
@@ -243,13 +254,23 @@ export default function PlaylistModal({ onClose, onLoadPlaylist, useCorsProxy })
             </form>
           )}
 
-          {/* Demo Channels Preset Button */}
+          {/* Preset Quick Load Buttons */}
           <div className="sample-playlists">
-            <div className="sample-title">Preset Quick Load</div>
+            <div className="sample-title">Featured Global Presets</div>
             <div className="sample-chips">
-              <button className="chip" onClick={handleLoadDemo}>
+              <button
+                className="chip"
+                onClick={handleLoadIPTVOrg}
+                disabled={loading}
+                style={{ background: '#E50914', borderColor: '#E50914', fontWeight: '700' }}
+              >
+                <Globe size={14} style={{ marginRight: '6px' }} />
+                {loading ? 'Loading...' : 'Load IPTV-Org Global Playlist'}
+              </button>
+
+              <button className="chip" onClick={handleLoadDemo} disabled={loading}>
                 <Play size={12} style={{ marginRight: '4px', fill: '#E50914', color: '#E50914' }} />
-                Load StreamFlix Demo Channels (CORS Verified)
+                Verified Cinema Demo
               </button>
             </div>
           </div>
