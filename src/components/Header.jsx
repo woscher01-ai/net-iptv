@@ -1,5 +1,5 @@
 import React from 'react';
-import { Search, Plus, Shield, ShieldOff, Globe, Layers, Activity, CheckCircle2 } from 'lucide-react';
+import { Search, Plus, Shield, ShieldOff, Globe, Layers, Tv } from 'lucide-react';
 
 export default function Header({
   searchTerm,
@@ -14,12 +14,7 @@ export default function Header({
   countriesList,
   useCorsProxy,
   setUseCorsProxy,
-  favoritesCount,
-  onRunHealthCheck,
-  isCheckingHealth,
-  healthCheckProgress,
-  showOnlyWorking,
-  setShowOnlyWorking
+  favoritesCount
 }) {
   return (
     <header className="navbar scrolled">
@@ -37,6 +32,16 @@ export default function Header({
             Home
           </button>
 
+          {/* Samsung TV Category Navbar Link */}
+          <button
+            className={`nav-item ${activeFilter === 'Samsung TV Plus (USA)' ? 'active' : ''}`}
+            onClick={() => setActiveFilter('Samsung TV Plus (USA)')}
+            style={{ display: 'flex', alignItems: 'center', gap: '4px', color: activeFilter === 'Samsung TV Plus (USA)' ? '#E50914' : '#fff' }}
+          >
+            <Tv size={14} color="#034EA2" />
+            <span>Samsung TV</span>
+          </button>
+
           <button
             className={`nav-item ${activeFilter === 'favorites' ? 'active' : ''}`}
             onClick={() => setActiveFilter('favorites')}
@@ -44,8 +49,29 @@ export default function Header({
             Favorites ({favoritesCount})
           </button>
 
+          <button
+            className={`nav-item ${activeFilter === 'Movies & Cinema' ? 'active' : ''}`}
+            onClick={() => setActiveFilter('Movies & Cinema')}
+          >
+            Movies
+          </button>
+
+          <button
+            className={`nav-item ${activeFilter === 'News & Documentaries' ? 'active' : ''}`}
+            onClick={() => setActiveFilter('News & Documentaries')}
+          >
+            News
+          </button>
+
+          <button
+            className={`nav-item ${activeFilter === 'Sports Live' ? 'active' : ''}`}
+            onClick={() => setActiveFilter('Sports Live')}
+          >
+            Sports
+          </button>
+
           {/* Group View vs Country View Toggle */}
-          <div style={{ display: 'flex', alignItems: 'center', background: '#252525', borderRadius: '20px', padding: '2px', marginLeft: '8px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', background: '#252525', borderRadius: '20px', padding: '2px', marginLeft: '4px' }}>
             <button
               className={`tab-btn ${viewMode === 'group' ? 'active' : ''}`}
               style={{ fontSize: '12px', padding: '4px 10px', borderRadius: '16px' }}
@@ -67,33 +93,6 @@ export default function Header({
       </div>
 
       <div className="nav-right">
-        {/* Stream Health Check Button */}
-        <button
-          className={`btn ${showOnlyWorking ? 'btn-netflix' : 'btn-outline'}`}
-          onClick={onRunHealthCheck}
-          disabled={isCheckingHealth}
-          title="Test stream availability across channels"
-          style={{ padding: '6px 12px', fontSize: '12px' }}
-        >
-          <Activity size={14} className={isCheckingHealth ? "spin-icon" : ""} />
-          <span>
-            {isCheckingHealth
-              ? `Testing (${healthCheckProgress.current}/${healthCheckProgress.total})`
-              : 'Test Streams'}
-          </span>
-        </button>
-
-        {/* Working Channels Filter Toggle */}
-        <button
-          className={`chip ${showOnlyWorking ? 'active' : ''}`}
-          style={{ background: showOnlyWorking ? '#22c55e' : '#282828', borderColor: showOnlyWorking ? '#22c55e' : 'rgba(255,255,255,0.2)', fontSize: '12px', padding: '6px 10px' }}
-          onClick={() => setShowOnlyWorking(!showOnlyWorking)}
-          title="Filter to display working channels only"
-        >
-          <CheckCircle2 size={13} style={{ marginRight: '4px' }} />
-          Working Only
-        </button>
-
         {/* Country Selector Dropdown */}
         {countriesList && countriesList.length > 0 && (
           <select

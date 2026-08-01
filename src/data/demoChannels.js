@@ -2,9 +2,69 @@
  * Verified CORS-friendly HLS live and vod test channels for out-of-the-box streaming.
  */
 
-export const DEMO_PLAYLIST_NAME = "StreamFlix Global Demo";
+export const DEMO_PLAYLIST_NAME = "StreamFlix & Samsung TV Plus";
 
 export const DEMO_CHANNELS = [
+  // --- Samsung TV Plus Category Channels ---
+  {
+    id: "stv-1",
+    name: "Samsung TV Plus Live USA",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Samsung_Logo.svg/512px-Samsung_Logo.svg.png",
+    backdrop: "https://images.unsplash.com/photo-1593784991095-a205069470b6?auto=format&fit=crop&w=1200&q=80",
+    group: "Samsung TV Plus (USA)",
+    country: "United States",
+    countryCode: "US",
+    flag: "🇺🇸",
+    url: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8",
+    description: "Samsung TV Plus 24/7 premium live streaming channel.",
+    isFeatured: true,
+    isLive: true,
+    quality: "HD"
+  },
+  {
+    id: "stv-news",
+    name: "Samsung News 24/7",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Samsung_Logo.svg/512px-Samsung_Logo.svg.png",
+    backdrop: "https://images.unsplash.com/photo-1585829365295-ab7cd400c167?auto=format&fit=crop&w=1200&q=80",
+    group: "Samsung TV Plus (USA)",
+    country: "United States",
+    countryCode: "US",
+    flag: "🇺🇸",
+    url: "https://static.france24.com/live/F24_EN_LO_HLS/live_tv.m3u8",
+    description: "Samsung TV News live coverage from across the US.",
+    isLive: true,
+    quality: "FHD"
+  },
+  {
+    id: "stv-movies",
+    name: "Samsung Cinema Club",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Samsung_Logo.svg/512px-Samsung_Logo.svg.png",
+    backdrop: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=1200&q=80",
+    group: "Samsung TV Plus (USA)",
+    country: "United States",
+    countryCode: "US",
+    flag: "🇺🇸",
+    url: "https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8",
+    description: "Non-stop Hollywood blockbusters and independent features on Samsung TV Plus.",
+    isLive: false,
+    quality: "4K"
+  },
+  {
+    id: "stv-sports",
+    name: "Samsung Action Sports",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Samsung_Logo.svg/512px-Samsung_Logo.svg.png",
+    backdrop: "https://images.unsplash.com/photo-1517649763962-0c623266ddc0?auto=format&fit=crop&w=1200&q=80",
+    group: "Samsung TV Plus (USA)",
+    country: "United States",
+    countryCode: "US",
+    flag: "🇺🇸",
+    url: "https://rbmn-live.akamaized.net/hls/live/590964/BoB-aff-rbmn-live/master.m3u8",
+    description: "Extreme sports, highlights, and racing action on Samsung TV Plus.",
+    isLive: true,
+    quality: "FHD"
+  },
+
+  // --- Featured Cinema & International Channels ---
   {
     id: "demo-bbb",
     name: "[US] Big Buck Bunny 4K Cinema",
@@ -16,7 +76,6 @@ export const DEMO_CHANNELS = [
     flag: "🇺🇸",
     url: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8",
     description: "A large and lovable rabbit deals with pesky forest creatures in this open-source classic cinematic experience.",
-    isFeatured: true,
     isLive: true,
     quality: "4K HDR"
   },
@@ -49,20 +108,6 @@ export const DEMO_CHANNELS = [
     quality: "HD"
   },
   {
-    id: "demo-sintel",
-    name: "[UK] Sintel Fantasy Cinema",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/a/a7/Sintel_poster.jpg",
-    backdrop: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=1200&q=80",
-    group: "Movies & Cinema",
-    country: "United Kingdom",
-    countryCode: "UK",
-    flag: "🇬🇧",
-    url: "https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8",
-    description: "A lonely young woman searches for a baby dragon in a mythical fantasy world.",
-    isLive: false,
-    quality: "FHD"
-  },
-  {
     id: "demo-redbull",
     name: "[DE] Red Bull Extreme Sports Live",
     logo: "https://upload.wikimedia.org/wikipedia/en/thumb/f/f5/Red_Bull_GmbH_logo.svg/512px-Red_Bull_GmbH_logo.svg.png",
@@ -73,48 +118,6 @@ export const DEMO_CHANNELS = [
     flag: "🇩🇪",
     url: "https://rbmn-live.akamaized.net/hls/live/590964/BoB-aff-rbmn-live/master.m3u8",
     description: "Action sports, formula racing, cliff diving, and extreme outdoor adventures live from around the globe.",
-    isLive: true,
-    quality: "FHD"
-  },
-  {
-    id: "demo-tears",
-    name: "[NL] Tears of Steel Sci-Fi 4K",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/e/e0/Tears_of_Steel_poster.jpg",
-    backdrop: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1200&q=80",
-    group: "Movies & Cinema",
-    country: "Netherlands",
-    countryCode: "NL",
-    flag: "🇳🇱",
-    url: "https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8",
-    description: "Sci-Fi spectacle set in a dystopian future Amsterdam with cyborgs and high-tech defense systems.",
-    isLive: false,
-    quality: "4K"
-  },
-  {
-    id: "demo-india",
-    name: "[IN] Bollywood & India Live Stream",
-    logo: "https://images.unsplash.com/photo-1524492412937-b28074a5d7da?auto=format&fit=crop&w=300&q=80",
-    backdrop: "https://images.unsplash.com/photo-1524492412937-b28074a5d7da?auto=format&fit=crop&w=1200&q=80",
-    group: "Music & Entertainment",
-    country: "India",
-    countryCode: "IN",
-    flag: "🇮🇳",
-    url: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8",
-    description: "Indian entertainment, music videos, and cultural programs.",
-    isLive: true,
-    quality: "HD"
-  },
-  {
-    id: "demo-japan",
-    name: "[JP] Tokyo Anime & Culture Stream",
-    logo: "https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=300&q=80",
-    backdrop: "https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=1200&q=80",
-    group: "Music & Entertainment",
-    country: "Japan",
-    countryCode: "JP",
-    flag: "🇯🇵",
-    url: "https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8",
-    description: "Tokyo pop culture, anime broadcasts, and electronic music live.",
     isLive: true,
     quality: "FHD"
   }
