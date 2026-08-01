@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { X, Link, Upload, FileText, AlertCircle, Play, Globe } from 'lucide-react';
+import { X, Link, Upload, FileText, AlertCircle, Play, Globe, Tv } from 'lucide-react';
 import { parseM3U } from '../utils/m3uParser';
 import { DEMO_CHANNELS, DEMO_PLAYLIST_NAME } from '../data/demoChannels';
 
 export const IPTV_ORG_URL = "https://iptv-org.github.io/iptv/index.m3u";
+export const SAMSUNG_TV_URL = "https://apsattv.com/ssungusa.m3u";
 
 export default function PlaylistModal({ onClose, onLoadPlaylist, useCorsProxy }) {
   const [activeTab, setActiveTab] = useState('url');
@@ -19,9 +20,9 @@ export default function PlaylistModal({ onClose, onLoadPlaylist, useCorsProxy })
 
     try {
       let fetchUrl = url.trim();
-      
-      // Use CORS proxy if requested or for external github pages raw links
-      if (useCorsProxy || fetchUrl.includes('iptv-org.github.io')) {
+
+      // Automatically wrap in CORS proxy for cross-origin external M3U sources
+      if (useCorsProxy || fetchUrl.includes('iptv-org.github.io') || fetchUrl.includes('apsattv.com')) {
         fetchUrl = `https://corsproxy.io/?${encodeURIComponent(fetchUrl)}`;
       }
 
@@ -126,6 +127,10 @@ export default function PlaylistModal({ onClose, onLoadPlaylist, useCorsProxy })
     fetchAndParseM3U(IPTV_ORG_URL, "IPTV-Org Global Collection");
   };
 
+  const handleLoadSamsungTV = () => {
+    fetchAndParseM3U(SAMSUNG_TV_URL, "Samsung TV Plus (USA)");
+  };
+
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
@@ -176,7 +181,7 @@ export default function PlaylistModal({ onClose, onLoadPlaylist, useCorsProxy })
             <input
               type="text"
               className="form-input"
-              placeholder="e.g. My Global IPTV Pack"
+              placeholder="e.g. Samsung TV Plus USA"
               value={playlistName}
               onChange={(e) => setPlaylistName(e.target.value)}
             />
@@ -190,7 +195,7 @@ export default function PlaylistModal({ onClose, onLoadPlaylist, useCorsProxy })
                 <input
                   type="url"
                   className="form-input"
-                  placeholder="https://iptv-org.github.io/iptv/index.m3u"
+                  placeholder="https://apsattv.com/ssungusa.m3u"
                   value={urlInput}
                   onChange={(e) => setUrlInput(e.target.value)}
                   required
@@ -254,24 +259,36 @@ export default function PlaylistModal({ onClose, onLoadPlaylist, useCorsProxy })
             </form>
           )}
 
-          {/* Preset Quick Load Buttons */}
+          {/* Featured Presets */}
           <div className="sample-playlists">
-            <div className="sample-title">Featured Global Presets</div>
-            <div className="sample-chips">
+            <div className="sample-title">Featured IPTV Presets</div>
+            <div className="sample-chips" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
               <button
                 className="chip"
-                onClick={handleLoadIPTVOrg}
+                onClick={handleLoadSamsungTV}
                 disabled={loading}
-                style={{ background: '#E50914', borderColor: '#E50914', fontWeight: '700' }}
+                style={{ background: '#034EA2', borderColor: '#034EA2', fontWeight: '700', justifyContent: 'flex-start' }}
               >
-                <Globe size={14} style={{ marginRight: '6px' }} />
-                {loading ? 'Loading...' : 'Load IPTV-Org Global Playlist'}
+                <Tv size={14} style={{ marginRight: '6px' }} />
+                {loading ? 'Loading Samsung TV...' : 'Samsung TV Plus (USA)'}
               </button>
 
-              <button className="chip" onClick={handleLoadDemo} disabled={loading}>
-                <Play size={12} style={{ marginRight: '4px', fill: '#E50914', color: '#E50914' }} />
-                Verified Cinema Demo
-              </button>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <button
+                  className="chip"
+                  onClick={handleLoadIPTVOrg}
+                  disabled={loading}
+                  style={{ background: '#E50914', borderColor: '#E50914', fontWeight: '700', flex: 1 }}
+                >
+                  <Globe size={14} style={{ marginRight: '6px' }} />
+                  IPTV-Org Global
+                </button>
+
+                <button className="chip" onClick={handleLoadDemo} disabled={loading} style={{ flex: 1 }}>
+                  <Play size={12} style={{ marginRight: '4px', fill: '#E50914', color: '#E50914' }} />
+                  Verified Demo
+                </button>
+              </div>
             </div>
           </div>
         </div>
