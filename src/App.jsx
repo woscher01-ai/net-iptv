@@ -5,7 +5,7 @@ import CategoryRow from './components/CategoryRow';
 import VideoPlayerModal from './components/VideoPlayerModal';
 import PlaylistModal from './components/PlaylistModal';
 import { DEMO_CHANNELS, DEMO_PLAYLIST_NAME } from './data/demoChannels';
-import { COUNTRY_MAP } from './utils/m3uParser';
+import { checkStreamHealth } from './utils/streamChecker';
 import { Tv, Sparkles, Globe, Layers } from 'lucide-react';
 
 export default function App() {
@@ -46,6 +46,12 @@ export default function App() {
   const [showPlaylistModal, setShowPlaylistModal] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
 
+  // Stream Health Checker state
+  const [streamStatuses, setStreamStatuses] = useState({});
+  const [isCheckingHealth, setIsCheckingHealth] = useState(false);
+  const [healthCheckProgress, setHealthCheckProgress] = useState({ current: 0, total: 0 });
+  const [showOnlyWorking, setShowOnlyWorking] = useState(false);
+
   // Persist channels and favorites
   useEffect(() => {
     localStorage.setItem('streamflix_channels', JSON.stringify(channels));
@@ -80,13 +86,55 @@ export default function App() {
   const handleLoadPlaylist = ({ name, channels: newChannels }) => {
     setPlaylistName(name);
     setChannels(newChannels);
+    setStreamStatuses({});
     setActiveFilter('all');
     setSelectedCountry('all');
     setSearchTerm('');
     showToast(`Loaded ${newChannels.length} channels from ${name}`);
   };
 
-  // Derive unique countries list from current loaded channels
+  // Run Stream Health Check in batches of 4 channels
+  const handleRunHealthCheck = async () => {
+    if (channels.length === 0 || isCheckingHealth) return;
+
+    setIsCheckingHealth(true);
+    // Limit health check to first 100 channels max to maintain performance
+    const targetChannels = channels.slice(0, 100);
+    setHealthCheckProgress({ current: 0, total: targetChannels.length });
+
+    const batchSize = 4;
+    let completed = 0;
+    const newStatuses = { ...streamStatuses };
+
+    for (let i = 0; i < targetChannels.length; i += batchSize) {
+      const batch = targetChannels.slice(i, i + batchSize);
+
+      // Mark batch as checking
+      batch.forEach((ch) => {
+        newStatuses[ch.id] = 'checking';
+      });
+      setStreamStatuses({ ...newStatuses });
+
+      // Run health checks concurrently for batch
+      const results = await Promise.all(
+        batch.map((ch) => checkStreamHealth(ch.url, useCorsProxy))
+      );
+
+      // Apply results
+      batch.forEach((ch, idx) => {
+        newStatuses[ch.id] = results[idx];
+      });
+
+      completed += batch.length;
+      setHealthCheckProgress({ current: completed, total: targetChannels.length });
+      setStreamStatuses({ ...newStatuses });
+    }
+
+    setIsCheckingHealth(false);
+    showToast('Stream health check complete!');
+  };
+
+  // Derive unique countries list
   const countriesList = useMemo(() => {
     const uniqueMap = {};
     channels.forEach((c) => {
@@ -101,9 +149,14 @@ export default function App() {
     return Object.values(uniqueMap).sort((a, b) => a.name.localeCompare(b.name));
   }, [channels]);
 
-  // Filter channels based on search, category filter, and country filter
+  // Filter channels based on search, category, country, and working status
   const filteredChannels = useMemo(() => {
     return channels.filter((c) => {
+      // Filter out offline channels if "Working Only" toggle is active
+      if (showOnlyWorking && streamStatuses[c.id] === 'offline') {
+        return false;
+      }
+
       const nameMatch = c.name && c.name.toLowerCase().includes(searchTerm.toLowerCase());
       const groupMatch = c.group && c.group.toLowerCase().includes(searchTerm.toLowerCase());
       const countryMatch = c.country && c.country.toLowerCase().includes(searchTerm.toLowerCase());
@@ -111,7 +164,6 @@ export default function App() {
 
       if (!matchesSearch) return false;
 
-      // Filter by selected country dropdown
       if (selectedCountry !== 'all' && c.countryCode !== selectedCountry) {
         return false;
       }
@@ -124,9 +176,9 @@ export default function App() {
       }
       return true;
     });
-  }, [channels, searchTerm, activeFilter, selectedCountry, favorites]);
+  }, [channels, searchTerm, activeFilter, selectedCountry, favorites, showOnlyWorking, streamStatuses]);
 
-  // Group channels by Category OR by Country depending on viewMode
+  // Group channels by Category OR Country
   const groupedChannels = useMemo(() => {
     const groups = {};
 
@@ -176,6 +228,11 @@ export default function App() {
         useCorsProxy={useCorsProxy}
         setUseCorsProxy={setUseCorsProxy}
         favoritesCount={favorites.length}
+        onRunHealthCheck={handleRunHealthCheck}
+        isCheckingHealth={isCheckingHealth}
+        healthCheckProgress={healthCheckProgress}
+        showOnlyWorking={showOnlyWorking}
+        setShowOnlyWorking={setShowOnlyWorking}
       />
 
       {/* Hero Spotlight Section */}
@@ -188,7 +245,7 @@ export default function App() {
         />
       )}
 
-      {/* Main Content Area - Category or Country Carousels */}
+      {/* Main Content Area */}
       <main className="main-content" style={{ marginTop: (activeFilter === 'all' && selectedCountry === 'all' && !searchTerm) ? '-80px' : '90px' }}>
         {/* Country Quick Pills Bar when in Country Mode */}
         {viewMode === 'country' && countriesList.length > 0 && (
@@ -233,9 +290,9 @@ export default function App() {
             <p style={{ fontSize: '14px', maxWidth: '400px', margin: '0 auto 20px auto' }}>
               {searchTerm
                 ? `No channels matching "${searchTerm}". Try a different search term.`
-                : 'No channels matching the selected country or filter.'}
+                : 'No working channels match your filter criteria.'}
             </p>
-            <button className="btn btn-netflix" onClick={() => { setSelectedCountry('all'); setActiveFilter('all'); setSearchTerm(''); }}>
+            <button className="btn btn-netflix" onClick={() => { setSelectedCountry('all'); setActiveFilter('all'); setSearchTerm(''); setShowOnlyWorking(false); }}>
               Reset Filters
             </button>
           </div>

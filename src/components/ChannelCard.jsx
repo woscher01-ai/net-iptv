@@ -1,7 +1,13 @@
 import React, { useState } from 'react';
-import { Play, Heart } from 'lucide-react';
+import { Play, Heart, Activity } from 'lucide-react';
 
-export default function ChannelCard({ channel, onPlayChannel, isFavorite, onToggleFavorite }) {
+export default function ChannelCard({
+  channel,
+  onPlayChannel,
+  isFavorite,
+  onToggleFavorite,
+  status // 'online' | 'offline' | 'checking' | undefined
+}) {
   const [logoError, setLogoError] = useState(false);
   const [backdropError, setBackdropError] = useState(false);
 
@@ -22,8 +28,9 @@ export default function ChannelCard({ channel, onPlayChannel, isFavorite, onTogg
 
   return (
     <div
-      className="channel-card"
+      className={`channel-card ${status === 'offline' ? 'offline-card' : ''}`}
       onClick={() => onPlayChannel(channel)}
+      style={{ opacity: status === 'offline' ? 0.55 : 1 }}
     >
       <div
         className="card-bg"
@@ -31,6 +38,38 @@ export default function ChannelCard({ channel, onPlayChannel, isFavorite, onTogg
         onError={() => setBackdropError(true)}
       >
         <div className="card-gradient" />
+
+        {/* Stream Health Status Badge Top Left */}
+        {status && (
+          <div
+            style={{
+              position: 'absolute',
+              top: '8px',
+              left: '8px',
+              zIndex: 10,
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px',
+              background: status === 'online' ? 'rgba(34, 197, 94, 0.9)' : status === 'offline' ? 'rgba(239, 68, 68, 0.9)' : 'rgba(234, 179, 8, 0.9)',
+              color: '#fff',
+              padding: '2px 6px',
+              borderRadius: '4px',
+              fontSize: '10px',
+              fontWeight: '800',
+              textTransform: 'uppercase',
+              letterSpacing: '0.5px'
+            }}
+          >
+            <span style={{
+              width: '6px',
+              height: '6px',
+              borderRadius: '50%',
+              background: '#fff',
+              display: 'inline-block'
+            }} />
+            <span>{status === 'online' ? 'WORKING' : status === 'offline' ? 'OFFLINE' : 'TESTING'}</span>
+          </div>
+        )}
 
         {/* Flag badge top right */}
         {channel.flag && (
